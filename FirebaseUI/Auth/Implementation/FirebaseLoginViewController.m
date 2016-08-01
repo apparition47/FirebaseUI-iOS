@@ -321,4 +321,70 @@
 }
 #endif
 
+- (IBAction)signUp:(UIButton *)sender {
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"Sign Up"
+                                          message:@"Register a new account."
+                                          preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField)
+     {
+         textField.placeholder = @"Email";
+     }];
+    
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField)
+     {
+         textField.placeholder = @"Password";
+         textField.secureTextEntry = YES;
+     }];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        [self.ref createUser:alertController.textFields.firstObject.text password:alertController.textFields.lastObject.text withCompletionBlock:^(NSError *error) {
+            if (error == [NSNull null]) {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Sign Up"
+                                                                message:@"Failed"
+                                                               delegate:nil
+                                                      cancelButtonTitle:@"OK"
+                                                      otherButtonTitles:nil];
+                [alert show];
+            } else {
+                // login once created successfully
+                [self.passwordAuthProvider loginWithEmail:alertController.textFields.firstObject.text
+                                              andPassword:alertController.textFields.lastObject.text];
+            }
+        }];
+    }]];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (IBAction)forgotPassword:(UIButton *)sender {
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"Forgot Password"
+                                          message:@"Type in your email so we can recover your password."
+                                          preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField)
+     {
+         textField.placeholder = @"Email";
+     }];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        [self.ref resetPasswordForUser:alertController.textFields.firstObject.text withCompletionBlock:^(NSError *error) {
+            if (error == [NSNull null]) {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Forgot Password"
+                                                                message:@"Failed"
+                                                               delegate:nil
+                                                      cancelButtonTitle:@"OK"
+                                                      otherButtonTitles:nil];
+                [alert show];
+            } else {
+                
+            }
+        }];
+    }]];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
 @end
